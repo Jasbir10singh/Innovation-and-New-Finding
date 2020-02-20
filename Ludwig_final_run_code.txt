@@ -1,0 +1,67 @@
+Step 1- 
+!pip install -U -q PyDrive
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from google.colab import auth
+from oauth2client.client import GoogleCredentials
+
+Step 2-
+auth.authenticate_user()
+gauth = GoogleAuth()
+gauth.credentials = GoogleCredentials.get_application_default()
+drive = GoogleDrive(gauth)
+
+Step 3-
+downloaded = drive.CreateFile({'id':'15YXmrofgk_2yQHgk7QiZSgD_FTeaQsku'})
+downloaded.GetContentFile('Data.csv')
+
+Step 4-
+import pandas as pd
+xyz= pd.read_csv('Data.csv')
+print(xyz.head(1))
+
+Step 5-
+!pip install ludwig
+
+Step 6-
+import tensorflow as tf
+print(tf.__version__)
+
+Step 7-
+from ludwig.api import LudwigModel
+import pandas as pd
+Data= pd.read_csv('Data.csv')
+model_definition={
+    'input_features':[
+        {'name':'text','type':'text'},
+    ],
+    'output_features':[
+        {'name':'class','type':'category'}
+    ]
+}
+print('creating model')
+model=LudwigModel(model_definition)
+print('training_model')
+train_stats= model.train(data_df=Data)
+model.close()
+
+Step 8-
+!wget https://drive.google.com/drive/quota/model.yaml
+
+Step 9-
+!cat model.yaml
+
+Step 10-
+!ludwig experiment  --data_csv Data.csv \
+--model_definition_file model.yaml
+
+----------------------------------------------------
+!ludwig visualize --visualization learning_curves --training_statistics results/experiment_run_0/training_statistics.json
+
+!cd results/experiment_run_0/ &&ls
+
+!ludwig predict  --data_csv Data.csv --model_path results/experiment_run_0/model/
+
+!ls results/experiment_run_0/model/
+-----------------------------------------------------
+!pip install --upgrade absl-py
